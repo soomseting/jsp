@@ -3,7 +3,7 @@
 <%
 	String id = request.getParameter("id");
 	String pw = request.getParameter("pw");
-	String yes = request.getParameter("yes");
+	String idCheck = request.getParameter("idCheck");
 	
 	//id와 pw가 동일하면 로그인 성공
 	if(id.equals(pw)){
@@ -13,13 +13,13 @@
 		cookie.setMaxAge(1800);
 		response.addCookie(cookie);
 		
-		if(yes != null){
-			Cookie ck = new Cookie("yes",id);
-			ck.setMaxAge(5600);
-			response.addCookie(ck);
+		if(idCheck != null){
+			Cookie rememCk = new Cookie("rememCk",id);
+			rememCk.setMaxAge(8760000);
+			response.addCookie(rememCk);
 		}
-		response.sendRedirect("cookie_ex01.jsp");
-		/*  response.sendRedirect("cookie_ex01_welcome.jsp");*/
+		/* response.sendRedirect("cookie_ex01.jsp"); */
+		  response.sendRedirect("cookie_ex01_welcome.jsp");
 	}else{
 		response.sendRedirect("cookie_ex01_fail.jsp");
 	}

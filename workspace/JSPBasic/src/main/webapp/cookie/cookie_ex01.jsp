@@ -1,13 +1,19 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%
- 	String yes = "";
-	Cookie[] cookies = request.getCookies();
-	if(cookies != null){
-		for(int i = 0; i< cookies.length;i++){
-			if(cookies[i].getName().equals("yes")){
-				yes = cookies[i].getValue();
+ 	/* String yes = ""; */
+	Cookie[] arr = request.getCookies();
+ 	String rememCk = "";
+	if(arr != null){
+		/* for(int i = 0; i< arr.length;i++){
+			if(arr[i].getName().equals("yes")){
+				yes = arr[i].getValue();
 				break;
+			}
+		} */
+		for(Cookie c : arr){
+			if(c.getName().equals("rememCk")){
+				rememCk = c.getValue();	
 			}
 		}
 	}
@@ -29,10 +35,10 @@
 
 
 	<form action="cookie_ex01_result.jsp" method="post">
-		<input type="text" name="id" placeholder="아이디" value="<%= yes %>">
+		<input type="text" name="id" placeholder="아이디" value="<%=rememCk %>">
 		<input type="password" name="pw" placeholder="비밀번호">
 		<input type="submit" value="쿠키로그인">
-		<input type="checkbox" name="yes" value="<%= yes%>">아이디기억하기
+		<input type="checkbox" name="idCheck">아이디기억하기
 	</form>
 </body>
 </html>
