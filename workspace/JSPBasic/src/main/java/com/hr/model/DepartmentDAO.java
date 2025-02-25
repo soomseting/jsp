@@ -5,6 +5,9 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
+import javax.naming.InitialContext;
+import javax.sql.DataSource;
+
 public class DepartmentDAO {
 
 	/*
@@ -18,13 +21,23 @@ public class DepartmentDAO {
 	
 	//2. 외부에서 생성자를 호출할 수 없도록 private막는다.
 	private DepartmentDAO() {
-
+		
+		try {
+			InitialContext context = new InitialContext();
+			dataSource = (DataSource)context.lookup("java:comp/env/jdbc/oracle");
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	//3. 외부에서 객체를 요구할 때, instance를 반환합니다.
 	public static DepartmentDAO getInstance() {
 		return instance;
 	}
+	
+	//커넥션 풀을 사용할 dataSource클래스
+	private DataSource dataSource;
 	
 	private String url = "jdbc:oracle:thin:@localhost:1521:xe";
 	private String uid = "HR";
@@ -48,11 +61,13 @@ public class DepartmentDAO {
 		DepartmentDTO dto = new DepartmentDTO();
 		
 		try {
-			//1. 드라이버 클래스 로드
-			Class.forName("oracle.jdbc.driver.OracleDriver");
+//			//1. 드라이버 클래스 로드
+//			Class.forName("oracle.jdbc.driver.OracleDriver");
+//			
+//			//2. conn
+//			conn = DriverManager.getConnection(url,uid,upw);
 			
-			//2. conn
-			conn = DriverManager.getConnection(url,uid,upw);
+			conn = dataSource.getConnection();
 			
 			//3. pstmt
 			pstmt = conn.prepareStatement(sql);
