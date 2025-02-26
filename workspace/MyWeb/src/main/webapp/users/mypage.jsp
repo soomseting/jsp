@@ -71,7 +71,8 @@
 										제공하고자 합니다.)</p>
 								</div></li>
 							<li class="clear"><span class="tit_lbl">이메일</span>
-								<div class="reg_content">${sessionScope.userDTO.email }</div></li>
+								<div class="reg_content">${sessionScope.userDTO.email } <a href="delete.users" style="color:red;"> 회원탈퇴</a></div>
+							</li>
 							<!-- 
 								<li class="clear">
 									<span class="tit_lbl">이메일 수신동의</span>
@@ -86,6 +87,7 @@
 						<p class="btn_line">
 							<!--<a href="#" class="btn_baseColor">등록</a> -->
 							<input type="submit" class="btn_baseColor" value="변경하기">
+							
 						</p>
 					</fieldset>
 				</form>

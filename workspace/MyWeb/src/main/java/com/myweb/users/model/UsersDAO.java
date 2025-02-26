@@ -143,7 +143,7 @@ public class UsersDAO {
 		return dto;
 	}
  	
-	//
+	//회원정보수정
 	public int modify(String name, String gender, String phone, String snsYn, String email) {
 		int result = 0;
 		
@@ -171,7 +171,31 @@ public class UsersDAO {
 		
 	}
 	
-	//로그인기능
+	//회원정보삭제
+	public int delete(String email) {
+		int result = 0;
+		
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		
+		String sql ="DELETE FROM USERS WHERE EMAIL = ?";
+		
+		try {
+			conn = dataSource.getConnection();
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, email);
+			
+			result = pstmt.executeUpdate();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}finally {
+			JdbcUtil.close(conn, pstmt, null);
+		}
+		return result;
+	}
+	
+	
+	//
 		public UsersDTO getInfo(String email) {
 			UsersDTO dto = null;
 			

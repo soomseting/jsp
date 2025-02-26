@@ -1,6 +1,7 @@
 package com.myweb.users.service;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -103,16 +104,66 @@ public class UsersServiceImpl implements UsersService {
 		UsersDTO dto = (UsersDTO)session.getAttribute("userDTO");
 		String email = dto.getEmail();
 		
+		//dao호출
 		UsersDAO dao = UsersDAO.getInstance();
 		int result= dao.modify(name, gender, phone, snsYn, email);
 
-		if (result == 0) {
+		if (result == 0) {//fail  실패시 보낼 데이터는 없으니 redirect 써도 됨
 			request.setAttribute("msg", "실패");
 			request.getRequestDispatcher("mypage.jsp").forward(request, response);
-		} else {
+		} else {//true
+			//세션의 정보도 업데이트
+			UsersDTO userDTO = new UsersDTO(email,name,null,phone,gender,snsYn,null);
+			session.setAttribute("userDTO", dao);
+			//-----------------------------------------------------------
 			dto = dao.getInfo(email);
 			session.setAttribute("userDTO", dto);
-			response.sendRedirect("../index.jsp");
+//			response.sendRedirect("../index.jsp");
+			//-----------------------------------------------------------
+			//화면에 메시지를 보내는 또다른 방법(out 객체 사용)
+			response.setContentType("text/html; charset=UTF-8");
+			PrintWriter out = response.getWriter();
+			
+			out.println("<script>");
+			out.println("alert('정보가 수정되었습니다');");
+			out.println("location.href='/MyWeb/index.jsp';");
+			out.println("</script>");
+			
+		}
+	}
+
+	@Override
+	public void delete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		/*
+		 * 1. delete from 테이블 명 where 키 = ?
+		 * 2. 이메일은 세션에 있습니다
+		 * 3. 이메일을 얻어서 dao에서 삭제를 진행하면 됩니다
+		 * 4. 삭제 성공시에는 세션을 삭제하고 메인페이지로 이동(메시지도 띄워주세요), 
+		 *    실패시에는 마이페이지로 이동 redirect
+		 */
+		HttpSession session = request.getSession();
+		UsersDTO dto = (UsersDTO)session.getAttribute("userDTO");
+		String email = dto.getEmail();
+		
+		UsersDAO dao = UsersDAO.getInstance();
+		int result = dao.delete(email);
+		
+		if(result == 1) {
+			
+			
+			//화면에 메시지를 보내는 또다른 방법(out 객체 사용)
+			response.setContentType("text/html; charset=UTF-8");
+			PrintWriter out = response.getWriter();
+			
+			out.println("<script>");
+			out.println("alert('정보가 삭제되었습니다');");
+			out.println("location.href='/MyWeb/index.jsp';");
+			out.println("</script>");
+			session.removeAttribute("userDTO"); //세션 삭제
+//			session.invalidate();//모든 세션 삭제
+			
+		}else {
+			response.sendRedirect("/mypage.users");
 		}
 	}
 
