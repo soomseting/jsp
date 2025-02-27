@@ -1,9 +1,12 @@
 package com.myweb.board.service;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -41,7 +44,7 @@ public class BoardServiceImpl implements BoardService{
 		BoardDTO dto = new BoardDTO(0, email, title, content, regdate);
 		int result = board.regist(dto);
 //		System.out.println("성공실패 : " + result);
-		
+		sql.close();
 		//mvc2방식에서 redirect 컨트롤러를 태워나감
 		response.sendRedirect("list.board");
 		
@@ -59,6 +62,7 @@ public class BoardServiceImpl implements BoardService{
 		NoticeMapper board = sql.getMapper(NoticeMapper.class);
 		
 		ArrayList<BoardDTO> list = board.getList();
+		sql.close();
 		//request객체에 담는다
 		request.setAttribute("list", list);
 	}
@@ -77,8 +81,60 @@ public class BoardServiceImpl implements BoardService{
 		
 		String bno = request.getParameter("bno");
 		BoardDTO content =board.getContent(bno);
+		sql.close();
 		//request객체에 담는다
 		request.setAttribute("content", content );
+	}
+
+	@Override
+	public void update(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		String bno = request.getParameter("bno");
+		String title = request.getParameter("title");
+		String content = request.getParameter("content");
+		
+		//맵으로 전달하는 방법
+		Map<String, String>map = new HashMap<>();
+		map.put("bno", bno);
+		map.put("title", title);
+		map.put("content", content);
+		
+		SqlSession sql = sqlSessionFactory.openSession(true);
+		NoticeMapper mapper = sql.getMapper(NoticeMapper.class);
+		int result = mapper.update(map);
+		sql.close();
+		if(result == 1) { //업데이트 성공
+			//상세보기로 이동
+			response.setContentType("text/html; charset=UTF-8;");
+			PrintWriter out = response.getWriter();
+			out.println("<script>");
+			out.println("alert('수정 되었습니다');");
+			out.println("location.href='getContent.board?bno="+ bno +"';");
+			out.println("</script>");
+		}else { //업데이트 실패
+			//목록 이동
+			response.sendRedirect("list.board");
+		}
+	
+	}
+
+	@Override
+	public void delete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		/*
+		 * 1. bno값을 얻습니다.
+		 * 2. 삭제는 insert, update 똑같습니다. delete태그를 사용하면 됩니다
+		 * 3. 삭제를 진행하고 나서는 목록으로 이동해주면 됩니다.
+		 */
+		String bno = request.getParameter("bno");
+		
+		SqlSession sql = sqlSessionFactory.openSession(true);
+		NoticeMapper board = sql.getMapper(NoticeMapper.class);
+		int result = board.delete(bno);
+		sql.close();
+		if(result == 1) {
+			response.sendRedirect("list.board");
+		}else {
+			
+		}
 	}
 
 }

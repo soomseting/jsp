@@ -73,7 +73,7 @@
 								class="tit_lbl pilsoo_item">작성자</label>
 								<div class="app_content email_area">
 									<input type="hidden" /> <input type="text" placeholder="작성자"
-										name="email" required />
+										name="email" value="${sessionScope.userDTO.email}" required />
 
 								</div></li>
 							<li class="clear"><label for="name_lbl"
